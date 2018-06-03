@@ -1,27 +1,38 @@
-import org.javacord.api.DiscordApiBuilder
-import org.javacord.api.util.logging.ExceptionLogger
+import data.DiscordDataSource
+import domain.models.Event
+import domain.usecases.ListenMessages
+import org.slf4j.LoggerFactory
 
 /**
  * Main bot file
  */
 object Bot {
 
+    private val logger = LoggerFactory.getLogger(Bot::class.java)
+
+    private val listenMessages: ListenMessages by lazy {
+        ListenMessages(DiscordDataSource(token))
+    }
+
+    private lateinit var token: String
+
     @JvmStatic fun main(args: Array<String>) {
-        val token = args[0]
+        token = args[0]
 
-        DiscordApiBuilder().setToken(token).login().thenAccept({ api ->
+        listenMessages.execute()
+                .subscribe({
+                    println(it)
+                    processEvent(it)
+                }, {
+                    logger.debug("Discord api error", it)
+                })
+    }
 
-            // Add a listener which answers with "Pong!" if someone writes "!ping"
-            api.addMessageCreateListener({ event ->
-                println(event)
-                if (event.message.content.equals("!ping", ignoreCase = true)) {
-                    event.channel.sendMessage("Pong!")
-                }
-            })
-
-            // Print the invite url of your bot
-            System.out.println("You can invite the bot by using the following url: " + api.createBotInvite())
-
-        }).exceptionally(ExceptionLogger.get())
+    private fun processEvent(it: Event) {
+        if (it.message.equals("!ping", ignoreCase = true)) {
+            it.response("Pong!")
+        } else if (it.message.equals("!pong", ignoreCase = true)) {
+            it.response("Ping and Pong!")
+        }
     }
 }
