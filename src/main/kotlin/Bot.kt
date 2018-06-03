@@ -25,25 +25,27 @@ object Bot {
     @JvmStatic fun main(args: Array<String>) {
         token = args[0]
 
-        listenMessages.execute()
-                .subscribe({
-                    println(it)
-                    processEvent(it)
-                }, {
-                    logger.debug("Discord api error", it)
-                })
+        listenMessages
+                .execute()
+                .subscribe(
+                        { processEvent(it) },
+                        { logger.debug("Discord api error", it) })
     }
 
     private fun processEvent(it: Event) {
-        if (it.message.equals("!ping", ignoreCase = true)) {
-            sendMessage.execute(it.channel, "Pong!")
-                    .subscribe({}, { logger.debug("Discord api error", it) })
-        } else if (it.message.equals("!pong", ignoreCase = true)) {
-            sendMessage.execute(it.channel, "Ping and Pong!")
-                    .subscribe({}, { logger.debug("Discord api error", it) })
-        } else if (it.message.equals("nayeon", ignoreCase = true)) {
-            sendMessage.execute(it.channel, "Cute!")
-                    .subscribe({}, { logger.debug("Discord api error", it) })
+        when {
+            it.message.equals("!ping", ignoreCase = true) -> {
+                sendMessage.execute(it.channel, "Pong!")
+                        .subscribe({}, { logger.debug("Discord api error", it) })
+            }
+            it.message.equals("!pong", ignoreCase = true) -> {
+                sendMessage.execute(it.channel, "Ping and Pong!")
+                        .subscribe({}, { logger.debug("Discord api error", it) })
+            }
+            it.message.equals("nayeon", ignoreCase = true) -> {
+                sendMessage.execute(it.channel, "Cute!")
+                        .subscribe({}, { logger.debug("Discord api error", it) })
+            }
         }
     }
 }
