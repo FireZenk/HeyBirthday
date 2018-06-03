@@ -41,6 +41,10 @@ class DiscordRepository(private val discord: DiscordDataSource,
 
     fun sendBirthday(name: String, message: String): Completable {
         val url = imgur.searchImage(name)
-        return discord.sendBirthday("$message \n $url")
+        return discord.sendBirthday(database.getReminderChannel(), "$message \n $url")
+    }
+
+    fun saveReminderChannel(reminderChannel: String): Completable = Completable.fromAction {
+        database.saveReminderChannel(reminderChannel)
     }
 }

@@ -1,6 +1,7 @@
 package data.db
 
 import data.db.models.BirthdayEntity
+import data.db.models.ConfigEntity
 import data.db.models.EventEntity
 import domain.models.Birthday
 import domain.models.BirthdayDuplicatedError
@@ -15,6 +16,7 @@ class JsondbDataSource {
     companion object {
         private val EVENT_COLLECTION = EventEntity::class.java
         private val BIRTHDAY_COLLECTION = BirthdayEntity::class.java
+        private val CONFIG_COLLECTION = ConfigEntity::class.java
         private val DATABASE_LOCATION = "database"
         private val DATABASE_PACKAGE = "data.db.models"
     }
@@ -62,6 +64,13 @@ class JsondbDataSource {
     fun getBirthdays(date: Date): List<Birthday> = jsonDBTemplate.getCollection(BIRTHDAY_COLLECTION)
             .filter { it.date == date }
             .map { Birthday(it.name, it.date) }
+
+    fun saveReminderChannel(name: String): Completable = Completable.fromAction {
+        jsonDBTemplate.upsert<ConfigEntity>(ConfigEntity(reminderChannel = name))
+    }
+
+    fun getReminderChannel(): String = jsonDBTemplate.getCollection(CONFIG_COLLECTION)
+        .firstOrNull()?.reminderChannel ?: ConfigEntity().reminderChannel
 
     private fun checkCollection(collection: Class<*>) {
         if (jsonDBTemplate.collectionExists(collection).not()) {

@@ -11,10 +11,6 @@ import org.javacord.api.entity.channel.TextChannel
 
 class DiscordDataSource(token: String) {
 
-    companion object {
-        private const val BIRTHDAY_CHANNEL = "bots"
-    }
-
     private val api = DiscordApiBuilder().setToken(token).login().join()
 
     private val publisher: PublishProcessor<Event> = PublishProcessor.create()
@@ -33,12 +29,12 @@ class DiscordDataSource(token: String) {
     fun sendMessage(channel: TextChannel, message: String): Completable
             = Completable.fromAction { channel.sendMessage(message) }
 
-    fun sendBirthday(message: String): Completable {
+    fun sendBirthday(reminderChannel: String, message: String): Completable {
         val availableChannels: List<ServerTextChannel> = api.channels
                 .filter { it is ServerTextChannel }
                 .map { it as ServerTextChannel }
 
-        val channel = availableChannels.firstOrNull { it.name == BIRTHDAY_CHANNEL }
+        val channel = availableChannels.firstOrNull { it.name == reminderChannel }
 
         return channel?.let {
             Completable.fromAction { channel.sendMessage(message) }
