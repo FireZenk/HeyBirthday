@@ -29,7 +29,10 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     compile 'de.btobastian.Javacord:javacord:22c8c32'
+
     compile 'io.jsondb:jsondb-core:1.0.36'
+
+    compile 'com.google.code.gson:gson:2.7'
 
     compile 'io.reactivex.rxjava2:rxjava:2.1.14'
     compile 'io.reactivex.rxjava2:rxkotlin:2.2.0'

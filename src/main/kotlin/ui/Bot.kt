@@ -2,6 +2,7 @@ package ui
 
 import data.db.JsondbDataSource
 import data.net.DiscordDataSource
+import data.net.ImgurDataSource
 import domain.models.Birthday
 import domain.models.Event
 import domain.repositories.DiscordRepository
@@ -19,7 +20,7 @@ object Bot {
     private val logger = LoggerFactory.getLogger(Bot::class.java)
 
     private val repository: DiscordRepository by lazy {
-        DiscordRepository(DiscordDataSource(token), JsondbDataSource())
+        DiscordRepository(DiscordDataSource(token), ImgurDataSource(imgurClientId), JsondbDataSource())
     }
 
     private val listenMessages: ListenMessages by lazy { ListenMessages(repository) }
@@ -30,6 +31,7 @@ object Bot {
     private val celebrateBirthday by lazy { CelebrateBirthday(repository) }
 
     private lateinit var token: String
+    private lateinit var imgurClientId: String
 
     // Commands
     private val addBirthday: AddBirthday by lazy { AddBirthday(sendMessage, saveBirthday) }
@@ -37,6 +39,7 @@ object Bot {
 
     @JvmStatic fun main(args: Array<String>) {
         token = args[0]
+        imgurClientId = args[1]
 
         listenMessages
                 .execute()
@@ -66,7 +69,7 @@ object Bot {
     }
 
     private fun processBirthday(it: Birthday) {
-        celebrateBirthday.execute("Today is ${it.name}'s birthday! \uD83C\uDF89\uD83C\uDF89")
+        celebrateBirthday.execute(it.name, "Today is ${it.name}'s birthday! \uD83C\uDF89\uD83C\uDF89")
                 .subscribe({}, { logger.debug("Discord api error", it) })
     }
 }
