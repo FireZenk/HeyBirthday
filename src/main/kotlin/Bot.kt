@@ -1,6 +1,7 @@
 import data.DiscordDataSource
 import domain.models.Event
 import domain.usecases.ListenMessages
+import domain.usecases.SendMessage
 import org.slf4j.LoggerFactory
 
 /**
@@ -12,6 +13,10 @@ object Bot {
 
     private val listenMessages: ListenMessages by lazy {
         ListenMessages(DiscordDataSource(token))
+    }
+
+    private val sendMessage: SendMessage by lazy {
+        SendMessage(DiscordDataSource(token))
     }
 
     private lateinit var token: String
@@ -30,9 +35,14 @@ object Bot {
 
     private fun processEvent(it: Event) {
         if (it.message.equals("!ping", ignoreCase = true)) {
-            it.response("Pong!")
+            sendMessage.execute(it.channel, "Pong!")
+                    .subscribe({}, { logger.debug("Discord api error", it) })
         } else if (it.message.equals("!pong", ignoreCase = true)) {
-            it.response("Ping and Pong!")
+            sendMessage.execute(it.channel, "Ping and Pong!")
+                    .subscribe({}, { logger.debug("Discord api error", it) })
+        } else if (it.message.equals("nayeon", ignoreCase = true)) {
+            sendMessage.execute(it.channel, "Cute!")
+                    .subscribe({}, { logger.debug("Discord api error", it) })
         }
     }
 }
