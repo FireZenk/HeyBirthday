@@ -1,4 +1,4 @@
-package data
+package data.net
 
 import domain.models.Event
 import io.reactivex.Completable

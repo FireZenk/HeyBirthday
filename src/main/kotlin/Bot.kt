@@ -1,5 +1,7 @@
-import data.DiscordDataSource
+import data.db.JsondbDataSource
+import data.net.DiscordDataSource
 import domain.models.Event
+import domain.repositories.DiscordRepository
 import domain.usecases.ListenMessages
 import domain.usecases.SendMessage
 import org.slf4j.LoggerFactory
@@ -11,13 +13,12 @@ object Bot {
 
     private val logger = LoggerFactory.getLogger(Bot::class.java)
 
-    private val listenMessages: ListenMessages by lazy {
-        ListenMessages(DiscordDataSource(token))
+    private val repository: DiscordRepository by lazy {
+        DiscordRepository(DiscordDataSource(token), JsondbDataSource())
     }
 
-    private val sendMessage: SendMessage by lazy {
-        SendMessage(DiscordDataSource(token))
-    }
+    private val listenMessages: ListenMessages by lazy { ListenMessages(repository) }
+    private val sendMessage: SendMessage by lazy { SendMessage(repository) }
 
     private lateinit var token: String
 

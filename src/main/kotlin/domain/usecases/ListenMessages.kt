@@ -1,8 +1,8 @@
 package domain.usecases
 
-import data.DiscordDataSource
+import domain.repositories.DiscordRepository
 
-class ListenMessages(private val dataSource: DiscordDataSource) {
+class ListenMessages(private val repository: DiscordRepository) {
 
-    fun execute() = dataSource.listenMessages()
+    fun execute() = repository.listenMessages()
 }

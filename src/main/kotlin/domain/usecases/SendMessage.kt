@@ -1,10 +1,10 @@
 package domain.usecases
 
-import data.DiscordDataSource
+import domain.repositories.DiscordRepository
 import io.reactivex.Completable
 import org.javacord.api.entity.channel.TextChannel
 
-class SendMessage(private val discordDataSource: DiscordDataSource) {
+class SendMessage(private val repository: DiscordRepository) {
 
-    fun execute(channel: TextChannel, message: String): Completable = discordDataSource.sendMessage(channel, message)
+    fun execute(channel: TextChannel, message: String): Completable = repository.sendMessage(channel, message)
 }
