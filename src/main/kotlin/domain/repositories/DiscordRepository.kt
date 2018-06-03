@@ -29,4 +29,6 @@ class DiscordRepository(private val discord: DiscordDataSource, private val data
     }
 
     fun saveBirthday(name: String, date: Date): Completable = database.saveBirthday(name, date)
+
+    fun deleteBirthday(name: String): Completable = database.deleteBirthday(name)
 }

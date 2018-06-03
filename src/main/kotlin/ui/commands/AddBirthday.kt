@@ -5,12 +5,13 @@ import domain.models.Event
 import domain.usecases.SaveBirthday
 import domain.usecases.SendMessage
 import org.javacord.api.entity.channel.TextChannel
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.text.ParseException
 import java.util.Locale
 import java.text.SimpleDateFormat
 
-class AddBirthday(private val sendMessage: SendMessage, private val saveBirthday: SaveBirthday) {
+class AddBirthday(sendMessage: SendMessage, private val saveBirthday: SaveBirthday) : Command(sendMessage) {
 
     companion object {
         private const val DATE_FORMAT = "MM-dd-yyyy"
@@ -19,12 +20,12 @@ class AddBirthday(private val sendMessage: SendMessage, private val saveBirthday
         const val END_RESPONSE = "Ok! I'll send a reminder that day!"
         const val ERROR_FORMAT_RESPONSE = "The date format has to be $DATE_FORMAT"
         const val ERROR_DUPLICATED_RESPONSE = "This birthday already exists"
-        const val ERROR_SAVING_RESPONSE = "An error happen trying to save the date"
+        const val ERROR_SAVING_RESPONSE = "An error happened trying to save the date"
     }
 
-    private val logger = LoggerFactory.getLogger(AddBirthday::class.java)
+    override fun getLogger(): Logger = LoggerFactory.getLogger(AddBirthday::class.java)
 
-    fun processEvent(event: Event) {
+    override fun processEvent(event: Event) {
         val rawNameAndDate = event.message.substring(START_KEYWORD.length, event.message.length).trim()
 
         val name = rawNameAndDate.substring(0, rawNameAndDate.indexOf(" "))
@@ -46,10 +47,5 @@ class AddBirthday(private val sendMessage: SendMessage, private val saveBirthday
         } catch (e: ParseException) {
             sendResponse(event.channel, ERROR_FORMAT_RESPONSE)
         }
-    }
-
-    private fun sendResponse(channel: TextChannel, message: String) {
-        sendMessage.execute(channel, message)
-                .subscribe({}, { logger.debug("Discord api error", it) })
     }
 }

@@ -3,6 +3,7 @@ package data.db
 import data.db.models.BirthdayEntity
 import data.db.models.EventEntity
 import domain.models.BirthdayDuplicatedError
+import domain.models.BirthdayNotExistsError
 import domain.models.Event
 import io.jsondb.JsonDBTemplate
 import io.reactivex.Completable
@@ -40,6 +41,19 @@ class JsondbDataSource {
         alreadyExists?.let {
             return Completable.error(BirthdayDuplicatedError())
         } ?: jsonDBTemplate.insert<BirthdayEntity>(entity)
+
+        return Completable.complete()
+    }
+
+    fun deleteBirthday(name: String): Completable {
+        checkCollection(BIRTHDAY_COLLECTION)
+
+        val alreadyExists = jsonDBTemplate.getCollection(BIRTHDAY_COLLECTION)
+                .firstOrNull { it.name == name }
+
+        alreadyExists?.let {
+            jsonDBTemplate.remove(it, BIRTHDAY_COLLECTION)
+        } ?: return Completable.error(BirthdayNotExistsError())
 
         return Completable.complete()
     }
