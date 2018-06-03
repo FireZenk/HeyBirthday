@@ -1,10 +1,15 @@
+package ui
+
 import data.db.JsondbDataSource
 import data.net.DiscordDataSource
 import domain.models.Event
 import domain.repositories.DiscordRepository
 import domain.usecases.ListenMessages
+import domain.usecases.SaveBirthday
 import domain.usecases.SendMessage
+import org.javacord.api.entity.channel.TextChannel
 import org.slf4j.LoggerFactory
+import ui.commands.AddBirthday
 
 /**
  * Main bot file
@@ -19,8 +24,12 @@ object Bot {
 
     private val listenMessages: ListenMessages by lazy { ListenMessages(repository) }
     private val sendMessage: SendMessage by lazy { SendMessage(repository) }
+    private val saveBirthday by lazy { SaveBirthday(repository) }
 
     private lateinit var token: String
+
+    // Commands
+    private val addBirthday: AddBirthday by lazy { AddBirthday(sendMessage, saveBirthday) }
 
     @JvmStatic fun main(args: Array<String>) {
         token = args[0]
@@ -34,18 +43,11 @@ object Bot {
 
     private fun processEvent(it: Event) {
         when {
-            it.message.equals("!ping", ignoreCase = true) -> {
-                sendMessage.execute(it.channel, "Pong!")
-                        .subscribe({}, { logger.debug("Discord api error", it) })
-            }
-            it.message.equals("!pong", ignoreCase = true) -> {
-                sendMessage.execute(it.channel, "Ping and Pong!")
-                        .subscribe({}, { logger.debug("Discord api error", it) })
-            }
             it.message.equals("nayeon", ignoreCase = true) -> {
                 sendMessage.execute(it.channel, "Cute!")
                         .subscribe({}, { logger.debug("Discord api error", it) })
             }
+            it.message.startsWith(AddBirthday.START_KEYWORD, true) -> addBirthday.processEvent(it)
         }
     }
 }

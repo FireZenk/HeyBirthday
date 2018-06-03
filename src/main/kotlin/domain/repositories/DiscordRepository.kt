@@ -6,6 +6,7 @@ import domain.models.Event
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import org.javacord.api.entity.channel.TextChannel
+import java.util.*
 
 class DiscordRepository(private val discord: DiscordDataSource, private val database: JsondbDataSource) {
 
@@ -26,4 +27,6 @@ class DiscordRepository(private val discord: DiscordDataSource, private val data
         })
         return discord.sendMessage(channel, message)
     }
+
+    fun saveBirthday(name: String, date: Date): Completable = database.saveBirthday(name, date)
 }
