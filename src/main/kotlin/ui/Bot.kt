@@ -9,6 +9,7 @@ import domain.usecases.*
 import org.slf4j.LoggerFactory
 import ui.commands.AddBirthday
 import ui.commands.RemoveBirthday
+import java.util.*
 
 /**
  * Main bot file
@@ -26,6 +27,7 @@ object Bot {
     private val sendMessage: SendMessage by lazy { SendMessage(repository) }
     private val saveBirthday by lazy { SaveBirthday(repository) }
     private val deleteBirthday by lazy { DeleteBirthday(repository) }
+    private val celebrateBirthday by lazy { CelebrateBirthday(repository) }
 
     private lateinit var token: String
 
@@ -47,6 +49,9 @@ object Bot {
                 .subscribe(
                         { it.forEach { processBirthday(it) } },
                         { logger.debug("Discord api error", it) })
+
+        // TODO TEST ONLY
+        processBirthday(Birthday("Nayeon", Date()))
     }
 
     private fun processEvent(it: Event) {
@@ -61,6 +66,7 @@ object Bot {
     }
 
     private fun processBirthday(it: Birthday) {
-        // TODO
+        celebrateBirthday.execute("Today is ${it.name}'s birthday! \uD83C\uDF89\uD83C\uDF89")
+                .subscribe({}, { logger.debug("Discord api error", it) })
     }
 }

@@ -35,4 +35,6 @@ class DiscordRepository(private val discord: DiscordDataSource, private val data
     fun deleteBirthday(name: String): Completable = database.deleteBirthday(name)
 
     fun haveBirthdaysToday(): List<Birthday> = database.getBirthdays(Date())
+
+    fun sendBirthday(message: String): Completable = discord.sendBirthday(message)
 }
