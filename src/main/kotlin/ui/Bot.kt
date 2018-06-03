@@ -2,12 +2,10 @@ package ui
 
 import data.db.JsondbDataSource
 import data.net.DiscordDataSource
+import domain.models.Birthday
 import domain.models.Event
 import domain.repositories.DiscordRepository
-import domain.usecases.DeleteBirthday
-import domain.usecases.ListenMessages
-import domain.usecases.SaveBirthday
-import domain.usecases.SendMessage
+import domain.usecases.*
 import org.slf4j.LoggerFactory
 import ui.commands.AddBirthday
 import ui.commands.RemoveBirthday
@@ -24,6 +22,7 @@ object Bot {
     }
 
     private val listenMessages: ListenMessages by lazy { ListenMessages(repository) }
+    private val listenBirthdays: ListenBirthdays by lazy { ListenBirthdays(repository) }
     private val sendMessage: SendMessage by lazy { SendMessage(repository) }
     private val saveBirthday by lazy { SaveBirthday(repository) }
     private val deleteBirthday by lazy { DeleteBirthday(repository) }
@@ -42,6 +41,12 @@ object Bot {
                 .subscribe(
                         { processEvent(it) },
                         { logger.debug("Discord api error", it) })
+
+        listenBirthdays
+                .execute()
+                .subscribe(
+                        { it.forEach { processBirthday(it) } },
+                        { logger.debug("Discord api error", it) })
     }
 
     private fun processEvent(it: Event) {
@@ -53,5 +58,9 @@ object Bot {
             it.message.startsWith(AddBirthday.START_KEYWORD, true) -> addBirthday.processEvent(it)
             it.message.startsWith(RemoveBirthday.START_KEYWORD, true) -> removeBirthday.processEvent(it)
         }
+    }
+
+    private fun processBirthday(it: Birthday) {
+        // TODO
     }
 }

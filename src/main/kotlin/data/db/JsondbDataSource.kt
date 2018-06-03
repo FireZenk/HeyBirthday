@@ -2,6 +2,7 @@ package data.db
 
 import data.db.models.BirthdayEntity
 import data.db.models.EventEntity
+import domain.models.Birthday
 import domain.models.BirthdayDuplicatedError
 import domain.models.BirthdayNotExistsError
 import domain.models.Event
@@ -57,6 +58,10 @@ class JsondbDataSource {
 
         return Completable.complete()
     }
+
+    fun getBirthdays(date: Date): List<Birthday> = jsonDBTemplate.getCollection(BIRTHDAY_COLLECTION)
+            .filter { it.date == date }
+            .map { Birthday(it.name, it.date) }
 
     private fun checkCollection(collection: Class<*>) {
         if (jsonDBTemplate.collectionExists(collection).not()) {

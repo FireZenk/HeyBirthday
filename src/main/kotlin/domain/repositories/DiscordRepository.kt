@@ -2,9 +2,11 @@ package domain.repositories
 
 import data.db.JsondbDataSource
 import data.net.DiscordDataSource
+import domain.models.Birthday
 import domain.models.Event
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 import org.javacord.api.entity.channel.TextChannel
 import java.util.*
 
@@ -31,4 +33,6 @@ class DiscordRepository(private val discord: DiscordDataSource, private val data
     fun saveBirthday(name: String, date: Date): Completable = database.saveBirthday(name, date)
 
     fun deleteBirthday(name: String): Completable = database.deleteBirthday(name)
+
+    fun haveBirthdaysToday(): List<Birthday> = database.getBirthdays(Date())
 }
