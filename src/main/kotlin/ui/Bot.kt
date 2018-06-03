@@ -12,9 +12,6 @@ import ui.commands.AddBirthday
 import ui.commands.RemoveBirthday
 import java.util.*
 
-/**
- * Main bot file
- */
 object Bot {
 
     private val logger = LoggerFactory.getLogger(Bot::class.java)
@@ -52,9 +49,6 @@ object Bot {
                 .subscribe(
                         { it.forEach { processBirthday(it) } },
                         { logger.debug("Discord api error", it) })
-
-        // TODO TEST ONLY
-        processBirthday(Birthday("Nayeon", Date()))
     }
 
     private fun processEvent(it: Event) {
