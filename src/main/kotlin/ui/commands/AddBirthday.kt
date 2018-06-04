@@ -8,6 +8,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class AddBirthday(sendMessage: SendMessage, private val saveBirthday: SaveBirthday) : Command(sendMessage) {
@@ -28,12 +30,12 @@ class AddBirthday(sendMessage: SendMessage, private val saveBirthday: SaveBirthd
         val rawNameAndDate = event.message.substring(START_KEYWORD.length, event.message.length).trim()
 
         val name = rawNameAndDate.substring(0, rawNameAndDate.indexOf(" "))
-        val rawDate = rawNameAndDate.substring(rawNameAndDate.indexOf(" "), rawNameAndDate.length)
+        val rawDate = rawNameAndDate.substring(rawNameAndDate.indexOf(" ") + 1, rawNameAndDate.length)
 
-        val format = SimpleDateFormat(DATE_FORMAT, Locale.ENGLISH)
+        val format = DateTimeFormatter.ofPattern(DATE_FORMAT, Locale.ENGLISH)
 
         try {
-            val date = format.parse(rawDate)
+            val date = LocalDate.parse(rawDate, format)
 
             saveBirthday.execute(name, date).subscribe({
                 sendResponse(event.channel, END_RESPONSE)

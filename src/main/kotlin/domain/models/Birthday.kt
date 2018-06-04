@@ -1,5 +1,5 @@
 package domain.models
 
-import java.util.*
+import java.time.LocalDate
 
-data class Birthday(val name: String, val date: Date)
+data class Birthday(val name: String, val date: LocalDate)

@@ -11,8 +11,8 @@ class ConfigEntity {
     lateinit var reminderHour: String
 
     companion object {
-        const val REMINDER_CHANNEL_DEFAULT = "general"
-        const val REMINDER_HOUR_DEFAULT = "10:00"
+        private const val REMINDER_CHANNEL_DEFAULT = "general"
+        private const val REMINDER_HOUR_DEFAULT = "10:00"
 
         fun default(): ConfigEntity = ConfigEntity().apply {
             reminderChannel = REMINDER_CHANNEL_DEFAULT

@@ -7,7 +7,7 @@ import domain.models.BirthdayDuplicatedError
 import domain.models.BirthdayNotExistsError
 import io.jsondb.JsonDBTemplate
 import io.reactivex.Completable
-import java.util.*
+import java.time.LocalDate
 
 class JsondbDataSource {
 
@@ -20,7 +20,7 @@ class JsondbDataSource {
 
     private var jsonDBTemplate = JsonDBTemplate(DATABASE_LOCATION, DATABASE_PACKAGE)
 
-    fun saveBirthday(name: String, date: Date): Completable {
+    fun saveBirthday(name: String, date: LocalDate): Completable {
         checkCollection(BIRTHDAY_COLLECTION)
 
         val entity = BirthdayEntity(System.currentTimeMillis(), name, date)
@@ -48,7 +48,7 @@ class JsondbDataSource {
         return Completable.complete()
     }
 
-    fun getBirthdays(date: Date): List<Birthday> = jsonDBTemplate.getCollection(BIRTHDAY_COLLECTION)
+    fun getBirthdays(date: LocalDate): List<Birthday> = jsonDBTemplate.getCollection(BIRTHDAY_COLLECTION)
             .filter { it.date == date }
             .map { Birthday(it.name, it.date) }
 

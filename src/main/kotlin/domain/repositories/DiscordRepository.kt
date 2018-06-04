@@ -8,7 +8,7 @@ import domain.models.Event
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import org.javacord.api.entity.channel.TextChannel
-import java.util.*
+import java.time.LocalDate
 
 class DiscordRepository(private val discord: DiscordDataSource,
                         private val giphy: GiphyDataSource,
@@ -18,11 +18,11 @@ class DiscordRepository(private val discord: DiscordDataSource,
 
     fun sendMessage(channel: TextChannel, message: String): Completable = discord.sendMessage(channel, message)
 
-    fun saveBirthday(name: String, date: Date): Completable = database.saveBirthday(name, date)
+    fun saveBirthday(name: String, date: LocalDate): Completable = database.saveBirthday(name, date)
 
     fun deleteBirthday(name: String): Completable = database.deleteBirthday(name)
 
-    fun haveBirthdaysToday(): List<Birthday> = database.getBirthdays(Date())
+    fun haveBirthdaysToday(): List<Birthday> = database.getBirthdays(LocalDate.now())
 
     fun sendBirthday(name: String, message: String): Completable {
         return giphy.searchImage(name)?.let {

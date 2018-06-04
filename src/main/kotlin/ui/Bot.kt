@@ -8,7 +8,6 @@ import ui.commands.AddBirthday
 import ui.commands.ReminderChannel
 import ui.commands.ReminderHour
 import ui.commands.RemoveBirthday
-import java.util.*
 
 object Bot {
 
