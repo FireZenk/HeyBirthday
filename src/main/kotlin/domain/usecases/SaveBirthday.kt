@@ -1,7 +1,7 @@
 package domain.usecases
 
 import domain.repositories.DiscordRepository
-import java.util.Date
+import java.util.*
 
 class SaveBirthday(private val repository: DiscordRepository) {
 
