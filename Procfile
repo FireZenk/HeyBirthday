@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -cp target/classes:target/dependency/* Bot $DISCORD $GIPHY
+web: ./gradlew run --args '$DISCORD $GIPHY'
