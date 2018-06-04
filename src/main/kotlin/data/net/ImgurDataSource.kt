@@ -28,6 +28,10 @@ class ImgurDataSource(private val clientId: String) {
         val jsonData = response.body()?.string()
         val imgurData = gson.fromJson<ImgurData>(jsonData, type)
 
-        return imgurData.data[0].link
+        return if (imgurData.data.isEmpty()) {
+             null
+        } else {
+            imgurData.data[0].link
+        }
     }
 }
