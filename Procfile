@@ -1,1 +1,1 @@
-web: ./gradlew run --args '$DISCORD $GIPHY'
+web: ./build/install/heybirthday/bin/heybirthday $DISCORD $GIPHY
