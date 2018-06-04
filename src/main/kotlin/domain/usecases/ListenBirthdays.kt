@@ -2,16 +2,34 @@ package domain.usecases
 
 import domain.models.Birthday
 import domain.repositories.DiscordRepository
-import io.reactivex.Observable
-import java.util.concurrent.TimeUnit
+import io.reactivex.Flowable
+import io.reactivex.processors.PublishProcessor
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ListenBirthdays(private val repository: DiscordRepository) {
 
     companion object {
-        private const val TIME_INTERVAL = 1L
-        private val TIME_UNIT = TimeUnit.DAYS
+        private const val dayInMillis = 86400000L
     }
 
-    fun execute(): Observable<List<Birthday>> = Observable.timer(TIME_INTERVAL, TIME_UNIT)
-            .map { repository.haveBirthdaysToday() }
+    private val publisher: PublishProcessor<List<Birthday>> = PublishProcessor.create()
+    private val flowable = publisher.onBackpressureLatest()
+
+    fun execute(): Flowable<List<Birthday>> {
+        scheduleTimer()
+        return flowable
+    }
+
+    private fun scheduleTimer() {
+        val dateFormatter = SimpleDateFormat("HH:mm:ss")
+        val date = dateFormatter.parse("${repository.getReminderHour()}:00")
+
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+                publisher.onNext(repository.haveBirthdaysToday())
+            }
+
+        }, date, dayInMillis)
+    }
 }
