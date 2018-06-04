@@ -23,10 +23,10 @@ class JsondbDataSource {
     fun saveBirthday(name: String, date: LocalDate): Completable {
         checkCollection(BIRTHDAY_COLLECTION)
 
-        val entity = BirthdayEntity(System.currentTimeMillis(), name, date)
+        val entity = BirthdayEntity(System.currentTimeMillis(), name, date.monthValue, date.dayOfMonth, date.year)
 
         val alreadyExists = jsonDBTemplate.getCollection(BIRTHDAY_COLLECTION)
-                .firstOrNull { it.name == name && it.date == date }
+                .firstOrNull { it.name == name && LocalDate.of(it.year, it.month, it.day) == date }
 
         alreadyExists?.let {
             return Completable.error(BirthdayDuplicatedError())
@@ -49,8 +49,8 @@ class JsondbDataSource {
     }
 
     fun getBirthdays(date: LocalDate): List<Birthday> = jsonDBTemplate.getCollection(BIRTHDAY_COLLECTION)
-            .filter { it.date == date }
-            .map { Birthday(it.name, it.date) }
+            .filter { it.month == date.monthValue && it.day == date.dayOfMonth }
+            .map { Birthday(it.name, date) }
 
     fun saveReminderChannel(name: String): Completable = Completable.fromAction {
         val config = getConfig()
