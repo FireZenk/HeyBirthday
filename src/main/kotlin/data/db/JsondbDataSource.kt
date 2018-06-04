@@ -17,8 +17,8 @@ class JsondbDataSource {
         private val EVENT_COLLECTION = EventEntity::class.java
         private val BIRTHDAY_COLLECTION = BirthdayEntity::class.java
         private val CONFIG_COLLECTION = ConfigEntity::class.java
-        private val DATABASE_LOCATION = "database"
-        private val DATABASE_PACKAGE = "data.db.models"
+        private const val DATABASE_LOCATION = "database"
+        private const val DATABASE_PACKAGE = "data.db.models"
     }
 
     private var jsonDBTemplate = JsonDBTemplate(DATABASE_LOCATION, DATABASE_PACKAGE)
