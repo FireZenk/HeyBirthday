@@ -7,7 +7,6 @@ import domain.models.Birthday
 import domain.models.Event
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Single
 import org.javacord.api.entity.channel.TextChannel
 import java.util.*
 
@@ -15,23 +14,9 @@ class DiscordRepository(private val discord: DiscordDataSource,
                         private val imgur: ImgurDataSource,
                         private val database: JsondbDataSource) {
 
-    fun listenMessages(): Flowable<Event> {
-        return discord.listenMessages().map {
-            database.saveEvent(it).subscribe({}, {
-                // On save error just print for now
-                it.printStackTrace()
-            })
-            it
-        }
-    }
+    fun listenMessages(): Flowable<Event> = discord.listenMessages()
 
-    fun sendMessage(channel: TextChannel, message: String): Completable {
-        database.saveEvent(Event(0L, message, channel)).subscribe({}, {
-            // On save error just print for now
-            it.printStackTrace()
-        })
-        return discord.sendMessage(channel, message)
-    }
+    fun sendMessage(channel: TextChannel, message: String): Completable = discord.sendMessage(channel, message)
 
     fun saveBirthday(name: String, date: Date): Completable = database.saveBirthday(name, date)
 
@@ -47,4 +32,10 @@ class DiscordRepository(private val discord: DiscordDataSource,
     fun saveReminderChannel(reminderChannel: String): Completable = Completable.fromAction {
         database.saveReminderChannel(reminderChannel)
     }
+
+    fun saveReminderHour(reminderHour: String): Completable = Completable.fromAction {
+        database.saveReminderHour(reminderHour)
+    }
+
+    fun getReminderHour(): String = database.getReminderHour()
 }
