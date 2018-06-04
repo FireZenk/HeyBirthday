@@ -1,6 +1,10 @@
 # Hey birthday
 Birthday reminders bot for Discord app
 
+[![Build Status](https://travis-ci.org/FireZenk/HeyBirthday.svg?branch=develop)](https://travis-ci.org/FireZenk/HeyBirthday)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/FireZenk/HeyBirthday/issues)
+[![Beerpay](https://img.shields.io/beerpay/hashdog/scrapfy-chrome-extension.svg)](https://beerpay.io/FireZenk/HeyBirthday)
+
 ### Commands
 
 - eb!add `Name` `MM-dd-yyyy`
