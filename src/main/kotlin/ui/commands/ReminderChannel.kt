@@ -6,7 +6,8 @@ import domain.usecases.SendMessage
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class Configure(sendMessage: SendMessage, private val saveReminderChannel: SaveReminderChannel) : Command(sendMessage) {
+class ReminderChannel(sendMessage: SendMessage, private val saveReminderChannel: SaveReminderChannel)
+    : Command(sendMessage) {
 
     companion object {
         const val START_KEYWORD = "eb!reminderChannel"
@@ -14,7 +15,7 @@ class Configure(sendMessage: SendMessage, private val saveReminderChannel: SaveR
         const val ERROR_SAVING_RESPONSE = "An error happened trying to save the reminder channel"
     }
 
-    override fun getLogger(): Logger = LoggerFactory.getLogger(Configure::class.java)
+    override fun getLogger(): Logger = LoggerFactory.getLogger(ReminderChannel::class.java)
 
     override fun processEvent(event: Event) {
         val rawReminderChannel = event.message.substring(START_KEYWORD.length, event.message.length).trim()
