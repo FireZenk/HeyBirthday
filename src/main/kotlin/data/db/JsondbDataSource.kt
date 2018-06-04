@@ -53,18 +53,25 @@ class JsondbDataSource {
             .map { Birthday(it.name, it.date) }
 
     fun saveReminderChannel(name: String): Completable = Completable.fromAction {
-        jsonDBTemplate.upsert<ConfigEntity>(ConfigEntity(reminderChannel = name))
+        val config = getConfig()
+        config.reminderChannel = name
+        jsonDBTemplate.upsert<ConfigEntity>(config)
     }
 
     fun getReminderChannel(): String = jsonDBTemplate.getCollection(CONFIG_COLLECTION)
-        .firstOrNull()?.reminderChannel ?: ConfigEntity().reminderChannel
+        .firstOrNull()?.reminderChannel ?: getConfig().reminderChannel
 
     fun saveReminderHour(reminderHour: String): Completable = Completable.fromAction {
-        jsonDBTemplate.upsert<ConfigEntity>(ConfigEntity(reminderHour = reminderHour))
+        val config = getConfig()
+        config.reminderHour = reminderHour
+        jsonDBTemplate.upsert<ConfigEntity>(config)
     }
 
     fun getReminderHour(): String = jsonDBTemplate.getCollection(CONFIG_COLLECTION)
-            .firstOrNull()?.reminderHour ?: ConfigEntity().reminderHour
+            .firstOrNull()?.reminderHour ?: getConfig().reminderHour
+
+    private fun getConfig() = jsonDBTemplate.getCollection(CONFIG_COLLECTION).firstOrNull()
+            ?: ConfigEntity.default()
 
     private fun checkCollection(collection: Class<*>) {
         if (jsonDBTemplate.collectionExists(collection).not()) {

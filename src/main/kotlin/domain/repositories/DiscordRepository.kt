@@ -30,13 +30,9 @@ class DiscordRepository(private val discord: DiscordDataSource,
         } ?: discord.sendBirthday(database.getReminderChannel(), message)
     }
 
-    fun saveReminderChannel(reminderChannel: String): Completable = Completable.fromAction {
-        database.saveReminderChannel(reminderChannel)
-    }
+    fun saveReminderChannel(reminderChannel: String): Completable = database.saveReminderChannel(reminderChannel)
 
-    fun saveReminderHour(reminderHour: String): Completable = Completable.fromAction {
-        database.saveReminderHour(reminderHour)
-    }
+    fun saveReminderHour(reminderHour: String): Completable = database.saveReminderHour(reminderHour)
 
     fun getReminderHour(): String = database.getReminderHour()
 }

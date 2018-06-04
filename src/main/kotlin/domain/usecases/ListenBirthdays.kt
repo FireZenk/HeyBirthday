@@ -4,7 +4,6 @@ import domain.models.Birthday
 import domain.repositories.DiscordRepository
 import io.reactivex.Flowable
 import io.reactivex.processors.PublishProcessor
-import java.text.SimpleDateFormat
 import java.util.*
 
 class ListenBirthdays(private val repository: DiscordRepository) {
@@ -22,14 +21,19 @@ class ListenBirthdays(private val repository: DiscordRepository) {
     }
 
     private fun scheduleTimer() {
-        val dateFormatter = SimpleDateFormat("HH:mm:ss")
-        val date = dateFormatter.parse("${repository.getReminderHour()}:00")
+        val targetHour = repository.getReminderHour()
+        val separator = targetHour.indexOf(":")
+        val cal = Calendar.getInstance().apply {
+            time = Date()
+            this[Calendar.HOUR_OF_DAY] = targetHour.substring(0, separator).toInt()
+            this[Calendar.MINUTE] = targetHour.substring(separator + 1, targetHour.length).toInt()
+        }
 
         Timer().schedule(object : TimerTask() {
             override fun run() {
                 publisher.onNext(repository.haveBirthdaysToday())
             }
 
-        }, date, dayInMillis)
+        }, cal.time, dayInMillis)
     }
 }

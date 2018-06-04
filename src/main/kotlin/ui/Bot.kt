@@ -35,10 +35,7 @@ object Bot {
         listenBirthdaysDisposable = dependencies.listenBirthdays
                 .execute()
                 .subscribe(
-                        {
-                            it.forEach { processBirthday(it) }
-                            processBirthday(Birthday("Nayeon", Date())) // todo test only
-                        },
+                        { it.forEach { processBirthday(it) } },
                         { logger.debug("Discord api error", it) })
     }
 
