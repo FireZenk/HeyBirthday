@@ -52,3 +52,5 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+task stage(dependsOn: ['assemble'])
