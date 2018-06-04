@@ -2,7 +2,7 @@ package ui
 
 import data.db.JsondbDataSource
 import data.net.DiscordDataSource
-import data.net.ImgurDataSource
+import data.net.GiphyDataSource
 import domain.repositories.DiscordRepository
 import domain.usecases.*
 import ui.commands.AddBirthday
@@ -10,10 +10,10 @@ import ui.commands.ReminderChannel
 import ui.commands.ReminderHour
 import ui.commands.RemoveBirthday
 
-class DependencyTree(private val discordToken: String, private val imgurClientId: String) {
+class DependencyTree(private val discordToken: String, private val giphyToken: String) {
 
     private val repository: DiscordRepository by lazy {
-        DiscordRepository(DiscordDataSource(discordToken), ImgurDataSource(imgurClientId), JsondbDataSource())
+        DiscordRepository(DiscordDataSource(discordToken), GiphyDataSource(giphyToken), JsondbDataSource())
     }
 
     val listenMessages: ListenMessages by lazy { ListenMessages(repository) }

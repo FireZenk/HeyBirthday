@@ -2,7 +2,7 @@ package domain.repositories
 
 import data.db.JsondbDataSource
 import data.net.DiscordDataSource
-import data.net.ImgurDataSource
+import data.net.GiphyDataSource
 import domain.models.Birthday
 import domain.models.Event
 import io.reactivex.Completable
@@ -11,7 +11,7 @@ import org.javacord.api.entity.channel.TextChannel
 import java.util.*
 
 class DiscordRepository(private val discord: DiscordDataSource,
-                        private val imgur: ImgurDataSource,
+                        private val giphy: GiphyDataSource,
                         private val database: JsondbDataSource) {
 
     fun listenMessages(): Flowable<Event> = discord.listenMessages()
@@ -25,7 +25,7 @@ class DiscordRepository(private val discord: DiscordDataSource,
     fun haveBirthdaysToday(): List<Birthday> = database.getBirthdays(Date())
 
     fun sendBirthday(name: String, message: String): Completable {
-        return imgur.searchImage(name)?.let {
+        return giphy.searchImage(name)?.let {
             discord.sendBirthday(database.getReminderChannel(), "$message \n $it")
         } ?: discord.sendBirthday(database.getReminderChannel(), message)
     }

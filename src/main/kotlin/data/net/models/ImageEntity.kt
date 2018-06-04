@@ -1,5 +1,5 @@
 package data.net.models
 
-class ImgurData(val data: List<ImageEntity>)
+class GiphyData(val data: List<ImageEntity>)
 
-class ImageEntity(val link: String)
+class ImageEntity(val embed_url: String)

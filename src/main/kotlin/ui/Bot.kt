@@ -37,7 +37,7 @@ object Bot {
                 .subscribe(
                         {
                             it.forEach { processBirthday(it) }
-                            processBirthday(Birthday("Nayeon", Date()))
+                            processBirthday(Birthday("Nayeon", Date())) // todo test only
                         },
                         { logger.debug("Discord api error", it) })
     }
