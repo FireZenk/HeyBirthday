@@ -29,6 +29,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     compile 'de.btobastian.Javacord:javacord:22c8c32'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
 
     compile 'io.jsondb:jsondb-core:1.0.36'
 
