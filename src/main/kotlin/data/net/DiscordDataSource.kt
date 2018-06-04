@@ -5,7 +5,6 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.processors.PublishProcessor
 import org.javacord.api.DiscordApiBuilder
-import org.javacord.api.entity.channel.Channel
 import org.javacord.api.entity.channel.ServerTextChannel
 import org.javacord.api.entity.channel.TextChannel
 

@@ -2,19 +2,16 @@ package data.db
 
 import data.db.models.BirthdayEntity
 import data.db.models.ConfigEntity
-import data.db.models.EventEntity
 import domain.models.Birthday
 import domain.models.BirthdayDuplicatedError
 import domain.models.BirthdayNotExistsError
-import domain.models.Event
 import io.jsondb.JsonDBTemplate
 import io.reactivex.Completable
-import java.util.Date
+import java.util.*
 
 class JsondbDataSource {
 
     companion object {
-        private val EVENT_COLLECTION = EventEntity::class.java
         private val BIRTHDAY_COLLECTION = BirthdayEntity::class.java
         private val CONFIG_COLLECTION = ConfigEntity::class.java
         private const val DATABASE_LOCATION = "database"
@@ -22,16 +19,6 @@ class JsondbDataSource {
     }
 
     private var jsonDBTemplate = JsonDBTemplate(DATABASE_LOCATION, DATABASE_PACKAGE)
-
-    fun saveEvent(event: Event): Completable {
-        checkCollection(EVENT_COLLECTION)
-
-        val entity = EventEntity(event.id, event.message)
-
-        return Completable.fromAction {
-            jsonDBTemplate.upsert<EventEntity>(entity)
-        }
-    }
 
     fun saveBirthday(name: String, date: Date): Completable {
         checkCollection(BIRTHDAY_COLLECTION)
@@ -71,6 +58,13 @@ class JsondbDataSource {
 
     fun getReminderChannel(): String = jsonDBTemplate.getCollection(CONFIG_COLLECTION)
         .firstOrNull()?.reminderChannel ?: ConfigEntity().reminderChannel
+
+    fun saveReminderHour(reminderHour: String): Completable = Completable.fromAction {
+        jsonDBTemplate.upsert<ConfigEntity>(ConfigEntity(reminderHour = reminderHour))
+    }
+
+    fun getReminderHour(): String = jsonDBTemplate.getCollection(CONFIG_COLLECTION)
+            .firstOrNull()?.reminderHour ?: ConfigEntity().reminderHour
 
     private fun checkCollection(collection: Class<*>) {
         if (jsonDBTemplate.collectionExists(collection).not()) {
