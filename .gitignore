@@ -2,5 +2,6 @@
 .gradle/
 build/
 out/
-database/
+database/*json
+database/lock/
 target
