@@ -23,4 +23,9 @@ Today is `Name`'s birthday! :tada: :tada:
 
 ### How to install
 
-TODO()
+1. git clone https://github.com/FireZenk/HeyBirthday.git
+2. ./gradlew stage
+3. export DISCORD=YOUR_DISCORD_BOT_TOKEN
+4. export GIPHY=YOUR_GIHPY_API_KEY
+5. ./build/install/heybirthday/bin/heybirthday $DISCORD $GIPHY
+6. Enjoy!
