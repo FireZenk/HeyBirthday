@@ -4,10 +4,7 @@ import domain.models.Birthday
 import domain.models.Event
 import io.reactivex.disposables.Disposable
 import org.slf4j.LoggerFactory
-import ui.commands.AddBirthday
-import ui.commands.ReminderChannel
-import ui.commands.ReminderHour
-import ui.commands.RemoveBirthday
+import ui.commands.*
 import java.time.LocalDate
 
 object Bot {
@@ -52,6 +49,8 @@ object Bot {
                 listenBirthdaysDisposable.dispose()
                 listenBirthdays()
             })
+            it.message.startsWith(Info.START_KEYWORD, true)
+            -> dependencies.info.processEvent(it)
         }
     }
 

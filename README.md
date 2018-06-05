@@ -15,8 +15,11 @@ Birthday reminders bot for Discord app
     - eb!add `Name` `MM-dd-yyyy`
     - eb!remove `Name`
 
+Also you can type: `eb!info` and see all available commands directly one Discord.
 
-You will recieve a reminder message on the `reminderChannel` at `reminderHour` like:
+### Result
+
+You will receieve a reminder message on the `reminderChannel` at `reminderHour` like:
 
 Today is `Name`'s birthday (number)! :tada: :tada:
 (followed by a related image)

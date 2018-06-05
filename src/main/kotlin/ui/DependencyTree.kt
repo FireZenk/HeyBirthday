@@ -5,10 +5,7 @@ import data.net.DiscordDataSource
 import data.net.GiphyDataSource
 import domain.repositories.DiscordRepository
 import domain.usecases.*
-import ui.commands.AddBirthday
-import ui.commands.ReminderChannel
-import ui.commands.ReminderHour
-import ui.commands.RemoveBirthday
+import ui.commands.*
 
 class DependencyTree(private val discordToken: String, private val giphyToken: String) {
 
@@ -31,4 +28,5 @@ class DependencyTree(private val discordToken: String, private val giphyToken: S
     val removeBirthday: RemoveBirthday by lazy { RemoveBirthday(sendMessage, deleteBirthday) }
     val reminderChannel: ReminderChannel by lazy { ReminderChannel(sendMessage, saveReminderChannel) }
     val reminderHour: ReminderHour by lazy { ReminderHour(sendMessage, saveReminderHour) }
+    val info: Info by lazy { Info(sendMessage) }
 }
