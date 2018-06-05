@@ -8,6 +8,7 @@ import ui.commands.AddBirthday
 import ui.commands.ReminderChannel
 import ui.commands.ReminderHour
 import ui.commands.RemoveBirthday
+import java.time.LocalDate
 
 object Bot {
 
@@ -55,8 +56,9 @@ object Bot {
     }
 
     private fun processBirthday(it: Birthday) {
+        val yearsOld = LocalDate.now().year - it.date.year
         dependencies.celebrateBirthday
-                .execute(it.name, "Today is ${it.name}'s birthday! \uD83C\uDF89\uD83C\uDF89")
+                .execute(it.name, "Today is ${it.name}'s birthday ($yearsOld)! \uD83C\uDF89\uD83C\uDF89")
                 .subscribe({}, { logger.debug("Discord api error", it) })
     }
 }

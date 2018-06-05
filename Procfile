@@ -1,1 +1,0 @@
-web: ./build/install/heybirthday/bin/heybirthday $DISCORD $GIPHY

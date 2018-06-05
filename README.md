@@ -18,7 +18,7 @@ Birthday reminders bot for Discord app
 
 You will recieve a reminder message on the `reminderChannel` at `reminderHour` like:
 
-Today is `Name`'s birthday! :tada: :tada:
+Today is `Name`'s birthday (number)! :tada: :tada:
 (followed by a related image)
 
 ### How to install
