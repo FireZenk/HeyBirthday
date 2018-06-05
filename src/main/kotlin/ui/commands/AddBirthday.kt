@@ -37,7 +37,7 @@ class AddBirthday(sendMessage: SendMessage, private val saveBirthday: SaveBirthd
         try {
             val date = LocalDate.parse(rawDate, format)
 
-            saveBirthday.execute(name, date).subscribe({
+            saveBirthday.execute(event.serverId, name, date).subscribe({
                 sendResponse(event.channel, END_RESPONSE)
             }, {
                 when (it) {

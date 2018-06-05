@@ -16,6 +16,7 @@ class DependencyTree(private val discordToken: String, private val giphyToken: S
     val listenMessages: ListenMessages by lazy { ListenMessages(repository) }
     val listenBirthdays: ListenBirthdays by lazy { ListenBirthdays(repository) }
     val celebrateBirthday by lazy { CelebrateBirthday(repository) }
+    val listenServerConnection by lazy { ListenServerConnection(repository) }
 
     private val sendMessage: SendMessage by lazy { SendMessage(repository) }
     private val saveBirthday by lazy { SaveBirthday(repository) }

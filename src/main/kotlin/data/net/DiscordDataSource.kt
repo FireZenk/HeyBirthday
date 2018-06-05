@@ -1,6 +1,8 @@
 package data.net
 
+import domain.models.ConnectionSate
 import domain.models.Event
+import domain.models.ServerConnectionState
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.processors.PublishProcessor
@@ -12,17 +14,30 @@ class DiscordDataSource(token: String) {
 
     private val api = DiscordApiBuilder().setToken(token).login().join()
 
-    private val publisher: PublishProcessor<Event> = PublishProcessor.create()
-    private val flowable = publisher.onBackpressureLatest()
+    private val connectionStatePublisher: PublishProcessor<ServerConnectionState> = PublishProcessor.create()
+    private val connectionStateFlowable = connectionStatePublisher.onBackpressureLatest()
+
+    private val eventPublisher: PublishProcessor<Event> = PublishProcessor.create()
+    private val eventFlowable = eventPublisher.onBackpressureLatest()
+
+    fun listenConnection(): Flowable<ServerConnectionState> {
+        api.addServerBecomesAvailableListener {
+            connectionStatePublisher.onNext(ServerConnectionState(it.server.id, ConnectionSate.Available()))
+        }
+        api.addServerBecomesUnavailableListener {
+            connectionStatePublisher.onNext(ServerConnectionState(it.server.id, ConnectionSate.Unavailable()))
+        }
+        return connectionStateFlowable
+    }
 
     fun listenMessages(): Flowable<Event> {
         println("You can invite the bot by using the following url: " + api.createBotInvite())
 
         api.addMessageCreateListener({ event ->
-            publisher.onNext(Event(event.messageId, event.message.content, event.channel))
+            eventPublisher.onNext(Event(event.server.get().id, event.messageId, event.message.content, event.channel))
         })
 
-        return flowable
+        return eventFlowable
     }
 
     fun sendMessage(channel: TextChannel, message: String): Completable

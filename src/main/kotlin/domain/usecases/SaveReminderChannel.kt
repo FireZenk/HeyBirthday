@@ -4,5 +4,5 @@ import domain.repositories.DiscordRepository
 
 class SaveReminderChannel(private val repository: DiscordRepository) {
 
-    fun execute(reminderChannel: String) = repository.saveReminderChannel(reminderChannel)
+    fun execute(serverId: Long, reminderChannel: String) = repository.saveReminderChannel(serverId, reminderChannel)
 }

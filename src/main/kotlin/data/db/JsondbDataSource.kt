@@ -7,6 +7,7 @@ import domain.models.BirthdayDuplicatedError
 import domain.models.BirthdayNotExistsError
 import io.jsondb.JsonDBTemplate
 import io.reactivex.Completable
+import java.io.File
 import java.time.LocalDate
 
 class JsondbDataSource {
@@ -18,64 +19,84 @@ class JsondbDataSource {
         private const val DATABASE_PACKAGE = "data.db.models"
     }
 
-    private var jsonDBTemplate = JsonDBTemplate(DATABASE_LOCATION, DATABASE_PACKAGE)
-
-    fun saveBirthday(name: String, date: LocalDate): Completable {
-        checkCollection(BIRTHDAY_COLLECTION)
+    fun saveBirthday(serverId: Long, name: String, date: LocalDate): Completable {
+        val db = checkCollection(serverId, BIRTHDAY_COLLECTION)
 
         val entity = BirthdayEntity(System.currentTimeMillis(), name, date.monthValue, date.dayOfMonth, date.year)
 
-        val alreadyExists = jsonDBTemplate.getCollection(BIRTHDAY_COLLECTION)
+        val alreadyExists = db.getCollection(BIRTHDAY_COLLECTION)
                 .firstOrNull { it.name == name && LocalDate.of(it.year, it.month, it.day) == date }
 
         alreadyExists?.let {
             return Completable.error(BirthdayDuplicatedError())
-        } ?: jsonDBTemplate.insert<BirthdayEntity>(entity)
+        } ?: db.insert<BirthdayEntity>(entity)
 
         return Completable.complete()
     }
 
-    fun deleteBirthday(name: String): Completable {
-        checkCollection(BIRTHDAY_COLLECTION)
+    fun deleteBirthday(serverId: Long, name: String): Completable {
+        val db = checkCollection(serverId, BIRTHDAY_COLLECTION)
 
-        val alreadyExists = jsonDBTemplate.getCollection(BIRTHDAY_COLLECTION)
+        val alreadyExists = db.getCollection(BIRTHDAY_COLLECTION)
                 .firstOrNull { it.name == name }
 
         alreadyExists?.let {
-            jsonDBTemplate.remove(it, BIRTHDAY_COLLECTION)
+            db.remove(it, BIRTHDAY_COLLECTION)
         } ?: return Completable.error(BirthdayNotExistsError())
 
         return Completable.complete()
     }
 
-    fun getBirthdays(date: LocalDate): List<Birthday> = jsonDBTemplate.getCollection(BIRTHDAY_COLLECTION)
-            .filter { it.month == date.monthValue && it.day == date.dayOfMonth }
-            .map { Birthday(it.name, date) }
+    fun getBirthdays(serverId: Long, date: LocalDate): List<Birthday> {
+        val db = checkCollection(serverId, BIRTHDAY_COLLECTION)
+        return db.getCollection(BIRTHDAY_COLLECTION)
+                .filter { it.month == date.monthValue && it.day == date.dayOfMonth }
+                .map { Birthday(serverId, it.name, date) }
+    }
 
-    fun saveReminderChannel(name: String): Completable = Completable.fromAction {
-        val config = getConfig()
+    fun saveReminderChannel(serverId: Long, name: String): Completable = Completable.fromAction {
+        val db = checkCollection(serverId, CONFIG_COLLECTION)
+        val config = getConfig(db)
         config.reminderChannel = name
-        jsonDBTemplate.upsert<ConfigEntity>(config)
+        db.upsert<ConfigEntity>(config)
     }
 
-    fun getReminderChannel(): String = jsonDBTemplate.getCollection(CONFIG_COLLECTION)
-        .firstOrNull()?.reminderChannel ?: getConfig().reminderChannel
+    fun getReminderChannel(serverId: Long): String {
+        val db = checkCollection(serverId, CONFIG_COLLECTION)
+        return db.getCollection(CONFIG_COLLECTION)
+                .firstOrNull()?.reminderChannel ?: getConfig(db).reminderChannel
+    }
 
-    fun saveReminderHour(reminderHour: String): Completable = Completable.fromAction {
-        val config = getConfig()
+    fun saveReminderHour(serverId: Long, reminderHour: String): Completable = Completable.fromAction {
+        val db = checkCollection(serverId, CONFIG_COLLECTION)
+        val config = getConfig(db)
         config.reminderHour = reminderHour
-        jsonDBTemplate.upsert<ConfigEntity>(config)
+        db.upsert<ConfigEntity>(config)
     }
 
-    fun getReminderHour(): String = jsonDBTemplate.getCollection(CONFIG_COLLECTION)
-            .firstOrNull()?.reminderHour ?: getConfig().reminderHour
+    fun getReminderHour(serverId: Long): String {
+        val db = checkCollection(serverId, CONFIG_COLLECTION)
+        return db.getCollection(CONFIG_COLLECTION)
+                .firstOrNull()?.reminderHour ?: getConfig(db).reminderHour
+    }
 
-    private fun getConfig() = jsonDBTemplate.getCollection(CONFIG_COLLECTION).firstOrNull()
+    private fun getConfig(db: JsonDBTemplate): ConfigEntity = db.getCollection(CONFIG_COLLECTION).firstOrNull()
             ?: ConfigEntity.default()
 
-    private fun checkCollection(collection: Class<*>) {
-        if (jsonDBTemplate.collectionExists(collection).not()) {
-            jsonDBTemplate.createCollection(collection)
+    private fun checkCollection(serverId: Long, collection: Class<*>): JsonDBTemplate {
+        checkDirectory(serverId)
+
+        val db = JsonDBTemplate("$DATABASE_LOCATION/$serverId", DATABASE_PACKAGE)
+        if (db.collectionExists(collection).not()) {
+            db.createCollection(collection)
+        }
+        return db
+    }
+
+    private fun checkDirectory(serverId: Long) {
+        val directory = File("$DATABASE_LOCATION/$serverId")
+        if (directory.exists().not()) {
+            directory.mkdir()
         }
     }
 }

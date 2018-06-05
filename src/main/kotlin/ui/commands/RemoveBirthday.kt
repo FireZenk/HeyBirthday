@@ -21,7 +21,7 @@ class RemoveBirthday(sendMessage: SendMessage, private val deleteBirthday: Delet
     override fun processEvent(event: Event) {
         val rawName = event.message.substring(START_KEYWORD.length, event.message.length).trim()
 
-        deleteBirthday.execute(rawName).subscribe({
+        deleteBirthday.execute(event.serverId, rawName).subscribe({
             sendResponse(event.channel, END_RESPONSE)
         }, {
             when (it) {

@@ -15,13 +15,13 @@ class ListenBirthdays(private val repository: DiscordRepository) {
     private val publisher: PublishProcessor<List<Birthday>> = PublishProcessor.create()
     private val flowable = publisher.onBackpressureLatest()
 
-    fun execute(): Flowable<List<Birthday>> {
-        scheduleTimer()
+    fun execute(serverId: Long): Flowable<List<Birthday>> {
+        scheduleTimer(serverId)
         return flowable
     }
 
-    private fun scheduleTimer() {
-        val targetHour = repository.getReminderHour()
+    private fun scheduleTimer(serverId: Long) {
+        val targetHour = repository.getReminderHour(serverId)
         val separator = targetHour.indexOf(":")
         val cal = Calendar.getInstance().apply {
             time = Date()
@@ -31,7 +31,7 @@ class ListenBirthdays(private val repository: DiscordRepository) {
 
         Timer().schedule(object : TimerTask() {
             override fun run() {
-                publisher.onNext(repository.haveBirthdaysToday())
+                publisher.onNext(repository.haveBirthdaysToday(serverId))
             }
 
         }, cal.time, dayInMillis)
