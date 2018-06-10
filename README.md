@@ -24,7 +24,15 @@ You will receieve a reminder message on the `reminderChannel` at `reminderHour` 
 Today is `Name`'s birthday (number)! :tada: :tada:
 (followed by a related image)
 
-### How to install
+### Invite me!
+
+[Click here](https://discordapp.com/oauth2/authorize?client_id=455335492096098314&scope=bot&permissions=0)
+
+---
+
+### Or create your own instace
+
+##### How to install
 
 1. `git clone https://github.com/FireZenk/HeyBirthday.git`
 2. `cd HeyBirthday/`
@@ -34,7 +42,7 @@ Today is `Name`'s birthday (number)! :tada: :tada:
 5. `./build/install/heybirthday/bin/heybirthday $DISCORD $GIPHY`
 6. Enjoy!
 
-### How to deploy
+##### How to deploy
 
 1. Create a *free account* on Google Cloud Platform
 2. Go to Google App Engine: [link](https://console.cloud.google.com/projectselector/appengine/create?lang=java&st=true&_ga=2.99197598.-1421285151.1528186199)
