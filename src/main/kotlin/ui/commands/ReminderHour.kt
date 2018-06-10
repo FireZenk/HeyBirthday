@@ -25,7 +25,7 @@ class ReminderHour(sendMessage: SendMessage, private val saveReminderHour: SaveR
         val rawReminderHour = event.message.substring(START_KEYWORD.length, event.message.length).trim()
 
         if (rawReminderHour.matches(Regex(HOUR_REGEX_PATTERN))) {
-            saveReminderHour.execute(event.serverId, rawReminderHour).subscribe({
+            saveReminderHour.execute(rawReminderHour).subscribe({
                 onConfigChanged()
                 sendResponse(event.channel, "$END_RESPONSE $rawReminderHour")
             }, {

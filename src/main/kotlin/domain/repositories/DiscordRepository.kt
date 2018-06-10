@@ -5,7 +5,6 @@ import data.net.DiscordDataSource
 import data.net.GiphyDataSource
 import domain.models.Birthday
 import domain.models.Event
-import domain.models.ServerConnectionState
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import org.javacord.api.entity.channel.TextChannel
@@ -15,30 +14,25 @@ class DiscordRepository(private val discord: DiscordDataSource,
                         private val giphy: GiphyDataSource,
                         private val database: JsondbDataSource) {
 
-    fun listenConnection(): Flowable<ServerConnectionState> = discord.listenConnection()
-
     fun listenMessages(): Flowable<Event> = discord.listenMessages()
 
     fun sendMessage(channel: TextChannel, message: String): Completable = discord.sendMessage(channel, message)
 
-    fun saveBirthday(serverId: Long, name: String, date: LocalDate): Completable
-            = database.saveBirthday(serverId, name, date)
+    fun saveBirthday(name: String, date: LocalDate): Completable = database.saveBirthday(name, date)
 
-    fun deleteBirthday(serverId: Long, name: String): Completable = database.deleteBirthday(serverId, name)
+    fun deleteBirthday(name: String): Completable = database.deleteBirthday(name)
 
-    fun haveBirthdaysToday(serverId: Long): List<Birthday> = database.getBirthdays(serverId, LocalDate.now())
+    fun haveBirthdaysToday(): List<Birthday> = database.getBirthdays(LocalDate.now())
 
-    fun sendBirthday(serverId: Long, name: String, message: String): Completable {
+    fun sendBirthday(name: String, message: String): Completable {
         return giphy.searchImage(name)?.let {
-            discord.sendBirthday(database.getReminderChannel(serverId), "$message \n $it")
-        } ?: discord.sendBirthday(database.getReminderChannel(serverId), message)
+            discord.sendBirthday(database.getReminderChannel(), "$message \n $it")
+        } ?: discord.sendBirthday(database.getReminderChannel(), message)
     }
 
-    fun saveReminderChannel(serverId: Long, reminderChannel: String): Completable
-            = database.saveReminderChannel(serverId, reminderChannel)
+    fun saveReminderChannel(reminderChannel: String): Completable = database.saveReminderChannel(reminderChannel)
 
-    fun saveReminderHour(serverId: Long, reminderHour: String): Completable
-            = database.saveReminderHour(serverId, reminderHour)
+    fun saveReminderHour(reminderHour: String): Completable = database.saveReminderHour(reminderHour)
 
-    fun getReminderHour(serverId: Long): String = database.getReminderHour(serverId)
+    fun getReminderHour(): String = database.getReminderHour()
 }

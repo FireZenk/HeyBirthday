@@ -20,7 +20,7 @@ class ReminderChannel(sendMessage: SendMessage, private val saveReminderChannel:
     override fun processEvent(event: Event) {
         val rawReminderChannel = event.message.substring(START_KEYWORD.length, event.message.length).trim()
 
-        saveReminderChannel.execute(event.serverId, rawReminderChannel).subscribe({
+        saveReminderChannel.execute(rawReminderChannel).subscribe({
             sendResponse(event.channel, "$END_RESPONSE$rawReminderChannel")
         }, {
             sendResponse(event.channel, ERROR_SAVING_RESPONSE)

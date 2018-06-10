@@ -1,11 +1,8 @@
 package ui
 
 import domain.models.Birthday
-import domain.models.ConnectionSate
 import domain.models.Event
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.plusAssign
 import org.slf4j.LoggerFactory
 import ui.commands.*
 import java.time.LocalDate
@@ -14,28 +11,13 @@ object Bot {
 
     private val logger = LoggerFactory.getLogger(Bot::class.java)
     private lateinit var dependencies: DependencyTree
-
-    private val serverDisposables = mutableMapOf<Long, Disposable>()
-    private val listenBirthdaysDisposables = CompositeDisposable()
+    private lateinit var listenBirthdaysDisposable: Disposable
 
     @JvmStatic fun main(args: Array<String>) {
         dependencies = DependencyTree(args[0], args[1])
 
-        listenServerConnection()
         listenMessages()
-    }
-
-    private fun listenServerConnection() {
-        dependencies.listenServerConnection
-                .execute()
-                .subscribe(
-                        {
-                            when(it.state) {
-                                is ConnectionSate.Available -> listenBirthdays(it.serverId)
-                                is ConnectionSate.Unavailable -> disposeBirthdaysListener(it.serverId)
-                            }
-                        },
-                        { logger.debug("Discord api error", it) })
+        listenBirthdays()
     }
 
     private fun listenMessages() {
@@ -46,22 +28,12 @@ object Bot {
                         { logger.debug("Discord api error", it) })
     }
 
-    private fun listenBirthdays(serverId: Long) {
-        val disposable = dependencies.listenBirthdays
-                .execute(serverId)
+    private fun listenBirthdays() {
+        listenBirthdaysDisposable = dependencies.listenBirthdays
+                .execute()
                 .subscribe(
                         { it.forEach { processBirthday(it) } },
                         { logger.debug("Discord api error", it) })
-
-        serverDisposables.put(serverId, disposable)
-        listenBirthdaysDisposables += disposable
-    }
-
-    private fun disposeBirthdaysListener(serverId: Long) {
-        serverDisposables[serverId]?.run {
-            serverDisposables.remove(serverId)
-            listenBirthdaysDisposables.delete(this)
-        }
     }
 
     private fun processEvent(it: Event) {
@@ -74,8 +46,8 @@ object Bot {
             -> dependencies.reminderChannel.processEvent(it)
             it.message.startsWith(ReminderHour.START_KEYWORD, true)
             -> dependencies.reminderHour.processEvent(it, {
-                disposeBirthdaysListener(it.serverId)
-                listenBirthdays(it.serverId)
+                listenBirthdaysDisposable.dispose()
+                listenBirthdays()
             })
             it.message.startsWith(Info.START_KEYWORD, true)
             -> dependencies.info.processEvent(it)
@@ -85,7 +57,7 @@ object Bot {
     private fun processBirthday(it: Birthday) {
         val yearsOld = LocalDate.now().year - it.date.year
         dependencies.celebrateBirthday
-                .execute(it.serverId, it.name, "Today is ${it.name}'s birthday ($yearsOld)! \uD83C\uDF89\uD83C\uDF89")
+                .execute(it.name, "Today is ${it.name}'s birthday ($yearsOld)! \uD83C\uDF89\uD83C\uDF89")
                 .subscribe({}, { logger.debug("Discord api error", it) })
     }
 }
